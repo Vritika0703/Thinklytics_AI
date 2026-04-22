@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decision Assistant AI | Strategic Reasoning</title>
+    <meta name="description" content="AI-powered decision support system with structured reasoning, confidence scoring, and multi-perspective analysis.">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Libraries -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+    <!-- Glassmorphic Background -->
+    <div class="fixed-bg" style="background-image: url('assets/bg.png');"></div>
+    <div class="bg-overlay"></div>
+
+    <!-- AI Mode Banner -->
+    <div id="mode-banner" class="mode-banner hidden">
+        <i data-lucide="zap" id="mode-icon"></i>
+        <span id="mode-text">Checking AI status...</span>
+        <a href="https://aistudio.google.com/app/apikey" target="_blank" id="get-key-link" class="mode-link hidden">
+            Get free Gemini API key →
+        </a>
+    </div>
+
+    <main>
+
+        <!-- ── HEADER ── -->
+        <header id="header-section">
+            <h1 class="font-outfit text-gradient">Decision Assistant AI</h1>
+            <p class="subtitle">Structured logic. Emotional intelligence. Multi-perspective risk analysis.</p>
+        </header>
+
+        <!-- ── INPUT PANEL ── -->
+        <section class="glass-card input-panel" id="input-section">
+            <label for="situation-input" class="input-label font-outfit">
+                <i data-lucide="brain-circuit" class="icon-primary"></i>
+                What decision are you facing?
+            </label>
+            <textarea
+                id="situation-input"
+                placeholder="E.g., Should I leave my stable corporate job to join an early-stage startup with high equity?"
+            ></textarea>
+
+            <!-- Bad input warning (hidden by default) -->
+            <div id="clarity-warning" class="clarity-warning hidden">
+                <i data-lucide="alert-circle"></i>
+                <span id="clarity-message">Please describe your situation in more detail.</span>
+            </div>
+
+            <button id="analyze-btn" class="btn-primary font-outfit">
+                <span>Analyze Situation</span>
+                <i data-lucide="arrow-right"></i>
+            </button>
+
+            <!-- History toggle -->
+            <button id="history-toggle-btn" class="btn-ghost">
+                <i data-lucide="history"></i>
+                <span>View Decision History</span>
+            </button>
+        </section>
+
+        <!-- ── HISTORY PANEL ── -->
+        <section class="glass-card history-panel hidden" id="history-section">
+            <div class="history-header">
+                <h2 class="font-outfit">Decision History</h2>
+                <div class="history-actions">
+                    <button id="clear-history-btn" class="btn-ghost-sm text-red-400">
+                        <i data-lucide="trash-2"></i> Clear
+                    </button>
+                    <button id="history-close-btn" class="btn-ghost-sm">
+                        <i data-lucide="x"></i>
+                    </button>
+                </div>
+            </div>
+            <ul id="history-list" class="history-list">
+                <li class="history-empty">No decisions analyzed yet.</li>
+            </ul>
+        </section>
+
+        <!-- ── LOADING ── -->
+        <section class="glass-card loading-panel hidden" id="loading-section">
+            <div class="spinner-ring">
+                <div class="spinner-track"></div>
+                <i data-lucide="cpu" class="spinner-icon pulse"></i>
+            </div>
+            <div class="thinking-text">
+                <h2 class="font-outfit" id="thinking-step">Parsing Situation...</h2>
+                <p class="thinking-sub">Synthesizing multi-modal dimensions</p>
+            </div>
+            <div class="progress-track">
+                <div id="progress-bar" class="progress-fill"></div>
+            </div>
+        </section>
+
+        <!-- ── RESULTS DASHBOARD ── -->
+        <section class="results-dashboard hidden" id="results-dashboard">
+
+            <!-- Row 1: Confidence + Reasoning Summary + Verdict -->
+            <div class="row-3col">
+                <!-- Confidence card -->
+                <div class="glass-card score-card">
+                    <h3 class="card-title font-outfit">
+                        <i data-lucide="shield-check" class="text-green-400"></i>
+                        Analysis Confidence
+                    </h3>
+                    <div class="score-display">
+                        <span id="conf-score" class="score-number font-outfit text-gradient">—</span>
+                        <span class="score-label">AI Self-Assessed</span>
+                    </div>
+                    <div class="score-bars">
+                        <div class="bar-row">
+                            <span>Logical Depth</span>
+                            <span id="logic-val">—</span>
+                        </div>
+                        <div class="bar-track"><div id="logic-bar" class="bar-fill bar-logical"></div></div>
+
+                        <div class="bar-row">
+                            <span>Emotional Weight</span>
+                            <span id="emotion-val">—</span>
+                        </div>
+                        <div class="bar-track"><div id="emotion-bar" class="bar-fill bar-emotion"></div></div>
+                    </div>
+                </div>
+
+                <!-- Reasoning Summary -->
+                <div class="glass-card reasoning-card">
+                    <div class="tag-row" id="ml-tags">
+                        <span class="tag tag-blue">AI Reasoning</span>
+                    </div>
+                    <h3 class="card-title font-outfit">Core Trade-off</h3>
+                    <p id="reasoning-summary" class="reasoning-text">—</p>
+                </div>
+
+                <!-- Verdict -->
+                <div class="glass-card verdict-card">
+                    <div class="tag-row">
+                        <span class="tag tag-purple">Recommendation</span>
+                        <h3 class="font-outfit">The Verdict</h3>
+                    </div>
+                    <p id="recommendation-text" class="verdict-text">—</p>
+                </div>
+            </div>
+
+            <!-- Row 2: Pros / Cons / Risks -->
+            <div class="row-3col">
+                <div class="glass-card border-accent-green">
+                    <h3 class="card-title font-outfit text-green-400">
+                        <i data-lucide="plus-circle"></i> Strategic Pros
+                    </h3>
+                    <ul id="pros-list" class="item-list"></ul>
+                </div>
+                <div class="glass-card border-accent-red">
+                    <h3 class="card-title font-outfit text-red-400">
+                        <i data-lucide="minus-circle"></i> Strategic Cons
+                    </h3>
+                    <ul id="cons-list" class="item-list"></ul>
+                </div>
+                <div class="glass-card border-accent-yellow">
+                    <h3 class="card-title font-outfit text-yellow-400">
+                        <i data-lucide="alert-triangle"></i> Key Risks
+                    </h3>
+                    <ul id="risks-list" class="item-list"></ul>
+                </div>
+            </div>
+
+            <!-- Row 3: Perspectives -->
+            <div class="glass-card perspectives-card">
+                <div class="perspective-sidebar">
+                    <h3 class="font-outfit">Perspectives</h3>
+                    <div class="tab-group">
+                        <button class="perspective-tab active" data-perspective="practical">
+                            <i data-lucide="settings-2"></i> Practical
+                        </button>
+                        <button class="perspective-tab" data-perspective="optimistic">
+                            <i data-lucide="trending-up"></i> Optimistic
+                        </button>
+                        <button class="perspective-tab" data-perspective="worst_case">
+                            <i data-lucide="shield-alert"></i> Worst Case
+                        </button>
+                    </div>
+                </div>
+                <div class="perspective-body">
+                    <div id="perspective-content" class="perspective-content">
+                        Select a perspective above.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reset -->
+            <div class="reset-row">
+                <button id="reset-btn" class="btn-ghost">
+                    <i data-lucide="refresh-cw"></i>
+                    Analyze New Situation
+                </button>
+            </div>
+
+        </section>
+
+    </main>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
