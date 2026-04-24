@@ -1,4 +1,4 @@
-# Decision Assistant AI 🧠
+# Thinkytics -- Decision Assistant AI 🧠
 
 **Decision Assistant AI** is a professional-grade strategic reasoning platform designed to break down complex dilemmas into structured, actionable insights. It utilizes a **Hybrid Intelligence Pipeline**—combining local Machine Learning classification with deep Cloud AI reasoning.
 
